@@ -3,7 +3,7 @@ class FogbugzListener
 
   def initialize(options={})
     @options = options
-    @state = :invalid
+    @state = :reference
     @actions = Hash.new {|h, k| h[k] = Array.new}
   end
 
@@ -37,10 +37,12 @@ class FogbugzListener
     message << "\n"
 
     if @actions.empty? then
-      message << "\nCommit: #{options[:sha1]}"
-      message << "\n#{options[:commit_url]}" if options[:commit_url]
-      references.each do |bugid|
-        service.append_message(:case => bugid, :message => message)
+      if references
+        message << "\nCommit: #{options[:sha1]}"
+        message << "\n#{options[:commit_url]}" if options[:commit_url]
+        references.each do |bugid|
+          service.append_message(:case => bugid, :message => message)
+        end
       end
     else
       message << "\nReferences " << references.map {|bugid| "case #{bugid}"}.join(", ") if references && !references.empty?
@@ -48,6 +50,7 @@ class FogbugzListener
       message << "\n#{options[:commit_url]}" if options[:commit_url]
       @actions.each_pair do |action, bugids|
         bugids.each do |bugid|
+          puts "#{action},#{bugid},#{message}"
           service.send(action, :case => bugid, :message => message)
         end
       end

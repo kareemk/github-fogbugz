@@ -1,0 +1,1 @@
+nohup /usr/local/src/github-fogbugz/bin/github-fogbugz-server -p 4444 -e production &

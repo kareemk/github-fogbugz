@@ -12,6 +12,12 @@ class MessageParserTest < Test::Unit::TestCase
     end
   end
 
+  def test_parse_message_with_case_number
+    @listener.expects(:reference)
+    @listener.expects(:case).with("2613").once
+    MessageParser.parse("ap bounds in search query if search in map is selected task \n\\ntask #2613" , @listener)
+  end
+
   def test_parse_message_with_reference_to_case_notifies_listener_about_case
     @listener.expects(:reference)
     @listener.expects(:case).with("1231").once

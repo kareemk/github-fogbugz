@@ -179,6 +179,7 @@ end
 class GithubFogbugz
   
   def initialize(payload)
+    puts "***** #{payload}"
     payload = JSON.parse(payload)
     return unless payload.keys.include?("repository")
     
@@ -186,7 +187,7 @@ class GithubFogbugz
     branch = payload["ref"].split('/').last
     
     payload["commits"].each do |c|
-      process_commit(c.first, c.last, repo, branch, payload['before'], config['fb_submit_url'], config['curl'])
+      process_commit(payload['after'], c, repo, branch, payload['before'], config['fb_submit_url'], config['curl'])
     end
     
     rescue
@@ -217,6 +218,7 @@ class GithubFogbugz
     author = commit["author"]["email"]
 
     token = tokens[author]
+    puts "********* #{tokens[author]} *********"
     submit_to_fogbugz(sha1, commit, token, curl_path) if token
 
     files = commit["removed"] | commit["added"] | commit["modified"]
